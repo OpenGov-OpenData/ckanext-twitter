@@ -1,5 +1,7 @@
 # ckanext-twitter
 
+[![Travis branch](https://img.shields.io/travis/NaturalHistoryMuseum/ckanext-twitter/master.svg?style=flat-square)](https://travis-ci.org/NaturalHistoryMuseum/ckanext-twitter) [![Coveralls github branch](https://img.shields.io/coveralls/github/NaturalHistoryMuseum/ckanext-twitter/master.svg?style=flat-square)](https://coveralls.io/github/NaturalHistoryMuseum/ckanext-twitter)
+
 Sends a tweet every time a dataset is created or updated in the database.
 
 # Setup
