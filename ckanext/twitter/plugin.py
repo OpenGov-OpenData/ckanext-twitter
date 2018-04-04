@@ -4,22 +4,23 @@
 # This file is part of ckanext-twitter
 # Created by the Natural History Museum in London, UK
 
-import ckan.plugins as p
-import ckanext.twitter.lib.config_helpers
 from beaker.cache import cache_regions
+
+import ckanext.twitter.lib.config_helpers
 from ckan.common import session
+from ckan.plugins import SingletonPlugin, implements, interfaces, toolkit
 from ckanext.twitter.lib import config_helpers, helpers as twitter_helpers
 
 
-class TwitterPlugin(p.SingletonPlugin):
+class TwitterPlugin(SingletonPlugin):
     '''
     Automatically send tweets when a dataset is updated or created.
     '''
-    p.implements(p.IConfigurable, inherit = True)
-    p.implements(p.IConfigurer)
-    p.implements(p.IPackageController, inherit = True)
-    p.implements(p.ITemplateHelpers, inherit = True)
-    p.implements(p.IRoutes, inherit = True)
+    implements(interfaces.IConfigurable, inherit=True)
+    implements(interfaces.IConfigurer)
+    implements(interfaces.IPackageController, inherit=True)
+    implements(interfaces.ITemplateHelpers, inherit=True)
+    implements(interfaces.IRoutes, inherit=True)
 
     # IConfigurable
     def configure(self, config):
@@ -37,9 +38,9 @@ class TwitterPlugin(p.SingletonPlugin):
     # IConfigurer
     def update_config(self, config):
         # Add templates
-        p.toolkit.add_template_directory(config, u'theme/templates')
+        toolkit.add_template_directory(config, u'theme/templates')
         # Add resources
-        p.toolkit.add_resource(u'theme/fanstatic', u'ckanext-twitter')
+        toolkit.add_resource(u'theme/fanstatic', u'ckanext-twitter')
 
     # IPackageController
     def after_update(self, context, pkg_dict):
@@ -62,8 +63,8 @@ class TwitterPlugin(p.SingletonPlugin):
     def before_map(self, _map):
         controller = u'ckanext.twitter.controllers.tweet:TweetController'
         _map.connect(u'post_tweet', '/dataset/{pkg_id}/tweet',
-                     controller = controller, action = u'send',
-                     conditions = {
+                     controller=controller, action=u'send',
+                     conditions={
                          u'method': [u'POST']
                          })
         return _map
