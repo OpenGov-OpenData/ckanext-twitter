@@ -6,12 +6,11 @@
 
 import json
 
-import ckan.lib.base as base
-from ckan.common import c
 from ckanext.twitter.lib import twitter_api
+from ckan.plugins import toolkit
 
 
-class TweetController(base.BaseController):
+class TweetController(toolkit.BaseController):
     '''
     A class exposing tweet functions as AJAX endpoints.
     '''
@@ -24,7 +23,7 @@ class TweetController(base.BaseController):
         :param pkg_id: The package ID (for caching).
         :return: str
         '''
-        body = dict(c.pylons.request.postvars)
+        body = dict(toolkit.request.postvars)
         text = body.get(u'tweet_text', None)
         if text:
             posted, reason = twitter_api.post_tweet(text, pkg_id)
