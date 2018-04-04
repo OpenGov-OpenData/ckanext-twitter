@@ -5,7 +5,6 @@
 # Created by the Natural History Museum in London, UK
 
 from ckan.common import session
-from ckan.logic import NotFound, get_action
 from ckan.plugins import toolkit
 from ckanext.twitter.lib import (parsers as twitter_parsers)
 
@@ -34,7 +33,7 @@ class TwitterJSHelpers(object):
         name or ID.
         :return: dict
         '''
-        return get_action(u'package_show')(self.context, {
+        return toolkit.get_action(u'package_show')(self.context, {
             u'id': package_name_or_id
             })
 
@@ -45,7 +44,7 @@ class TwitterJSHelpers(object):
         :param package_id: The ID of the package to check.
         :return: boolean
         '''
-        revisions = get_action(u'package_activity_list')(self.context, {
+        revisions = toolkit.get_action(u'package_activity_list')(self.context, {
             u'id': package_id
             })
         return len(revisions) <= 3
@@ -71,7 +70,7 @@ class TwitterJSHelpers(object):
                                               self._is_new(package_id))
 
 
-def twitter_pkg_suitable(context, pkg_id, pkg_dict = None):
+def twitter_pkg_suitable(context, pkg_id, pkg_dict=None):
     '''
     Various tests to determine if a package is suitable for tweeting about,
     e.g. it's active & has resources.
@@ -85,13 +84,13 @@ def twitter_pkg_suitable(context, pkg_id, pkg_dict = None):
         package = pkg_dict
     else:
         try:
-            package = get_action(u'package_show')(context, {
+            package = toolkit.get_action(u'package_show')(context, {
                 u'id': pkg_id
                 })
-        except NotFound:
+        except toolkit.ObjectNotFound:
             return False
     if package.get(u'state', u'') != u'active' and package.get(u'state',
-                                                            u'') != u'draft':
+                                                               u'') != u'draft':
         return False
     resources = package.get(u'resources', [])
     if len(resources) == 0:

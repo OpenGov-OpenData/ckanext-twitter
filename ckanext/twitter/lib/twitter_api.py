@@ -8,6 +8,7 @@ import logging
 
 import oauth2
 from beaker.cache import cache_region
+
 from ckanext.twitter.lib import cache_helpers, config_helpers
 logger = logging.getLogger(u'ckanext.twitter')
 
@@ -78,7 +79,7 @@ def post_tweet(tweet_text, pkg_id):
     params = {
         u'status': tweet_text
         }
-    request = oauth2.Request(method = u'POST', url = url, parameters = params)
+    request = oauth2.Request(method=u'POST', url=url, parameters=params)
     postdata = request.to_postdata()
     response, content = client.request(url, u'POST', postdata)
     if response.status == 200:
@@ -87,4 +88,4 @@ def post_tweet(tweet_text, pkg_id):
     else:
         logger.debug(u'Not posted (tweet unsuccessful): ' + tweet_text)
     return response.status == 200, u'{0} {1}'.format(response.status,
-                                                    response.reason)
+                                                     response.reason)

@@ -7,6 +7,7 @@
 from datetime import datetime as dt
 
 from beaker.cache import Cache
+
 from ckanext.twitter.lib import config_helpers
 
 twitter_cache = Cache(u'twitter')

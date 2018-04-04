@@ -6,11 +6,11 @@
 
 import math
 
-import ckan.logic as logic
 import re
-from ckan.logic import get_action
-from ckanext.twitter.lib import config_helpers
 from jinja2 import Environment
+
+from ckan.plugins import toolkit
+from ckanext.twitter.lib import config_helpers
 
 tweet_limit = 140
 
@@ -49,7 +49,7 @@ def extract_info(context, pkg_dict, template_length, tokens):
                        t in [u'records', u'author']])
     for i in range(len(other_tokens)):
         char_limit = math.floor(
-                (max_total_token - total_token) / (len(other_tokens) - i))
+            (max_total_token - total_token) / (len(other_tokens) - i))
         val = unicode(simplified.get(other_tokens[i], u'')).strip()
         if len(val) > char_limit:
             val = truncate_field(val, char_limit)
@@ -105,7 +105,7 @@ def get_number_records(context, pkg_id):
     :param pkg_id: The package ID.
     :return: int
     '''
-    pkg = get_action(u'package_show')(context, {
+    pkg = toolkit.get_action(u'package_show')(context, {
         u'id': pkg_id
         })
     resources = pkg.get(u'resources', None)
@@ -115,16 +115,16 @@ def get_number_records(context, pkg_id):
     total = 0
     for rid in resource_ids:
         try:
-            resource_data = get_action(u'datastore_search')(context, {
+            resource_data = toolkit.get_action(u'datastore_search')(context, {
                 u'resource_id': rid
                 })
             total += resource_data.get(u'total', 0)
-        except logic.NotFound:
+        except toolkit.ObjectNotFound:
             pass
     return total
 
 
-def generate_tweet(context, pkg_id, is_new, force_truncate = True):
+def generate_tweet(context, pkg_id, is_new, force_truncate=True):
     '''
     Generates a standard tweet based on template values in the pylons
     config. Does not post the tweet; just generates and returns the text.
@@ -137,7 +137,7 @@ def generate_tweet(context, pkg_id, is_new, force_truncate = True):
     other methods account for this, but this is an optional final check.
     :return: str
     '''
-    pkg = get_action(u'package_show')(context, {
+    pkg = toolkit.get_action(u'package_show')(context, {
         u'id': pkg_id
         })
     if pkg.get(u'private', False):
