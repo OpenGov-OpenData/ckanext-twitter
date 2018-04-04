@@ -1,9 +1,15 @@
+#!/usr/bin/env python
+# encoding: utf-8
+#
+# This file is part of ckanext-twitter
+# Created by the Natural History Museum in London, UK
+
 from datetime import datetime as dt
 
 from beaker.cache import Cache
 from ckanext.twitter.lib import config_helpers
 
-twitter_cache = Cache('twitter')
+twitter_cache = Cache(u'twitter')
 
 
 def cache(pkg_id):

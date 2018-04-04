@@ -1,12 +1,18 @@
+#!/usr/bin/env python
+# encoding: utf-8
+#
+# This file is part of ckanext-twitter
+# Created by the Natural History Museum in London, UK
+
 import logging
 
 import oauth2
 from beaker.cache import cache_region
 from ckanext.twitter.lib import cache_helpers, config_helpers
-logger = logging.getLogger('ckanext.twitter')
+logger = logging.getLogger(u'ckanext.twitter')
 
 
-@cache_region('twitter', 'client')
+@cache_region(u'twitter', u'client')
 def twitter_client():
     '''
     Attempts to create a client for accessing the twitter API using the
@@ -30,13 +36,13 @@ def twitter_authenticate():
     '''
     authenticated = False
     while not authenticated:
-        was_cached = 'client' in cache_helpers.twitter_cache
+        was_cached = u'client' in cache_helpers.twitter_cache
         client = twitter_client()
-        url = 'https://api.twitter.com/1.1/account/verify_credentials.json'
-        response, content = client.request(url, 'GET')
+        url = u'https://api.twitter.com/1.1/account/verify_credentials.json'
+        response, content = client.request(url, u'GET')
         authenticated = response.status == 200
         if was_cached and not authenticated:
-            cache_helpers.twitter_cache.remove_value('client')
+            cache_helpers.twitter_cache.remove_value(u'client')
         else:
             break
     return authenticated
@@ -53,32 +59,32 @@ def post_tweet(tweet_text, pkg_id):
     :return: boolean, str
     '''
     if config_helpers.twitter_is_debug():
-        logger.debug('Not posted (debug): ' + tweet_text)
-        return False, 'debug'
+        logger.debug(u'Not posted (debug): ' + tweet_text)
+        return False, u'debug'
 
     # if not enough time has passed since the last tweet
     if not cache_helpers.expired(pkg_id):
-        logger.debug('Not posted (insufficient rest period): ' + tweet_text)
-        return False, 'insufficient rest period'
+        logger.debug(u'Not posted (insufficient rest period): ' + tweet_text)
+        return False, u'insufficient rest period'
 
     # if we can't authenticate
     if not twitter_authenticate():
-        logger.debug('Not posted (not authenticated): ' + tweet_text)
-        return False, 'not authenticated'
+        logger.debug(u'Not posted (not authenticated): ' + tweet_text)
+        return False, u'not authenticated'
 
     # try to actually post
     client = twitter_client()
-    url = 'https://api.twitter.com/1.1/statuses/update.json'
+    url = u'https://api.twitter.com/1.1/statuses/update.json'
     params = {
-        'status': tweet_text
+        u'status': tweet_text
         }
-    request = oauth2.Request(method = 'POST', url = url, parameters = params)
+    request = oauth2.Request(method = u'POST', url = url, parameters = params)
     postdata = request.to_postdata()
-    response, content = client.request(url, 'POST', postdata)
+    response, content = client.request(url, u'POST', postdata)
     if response.status == 200:
         cache_helpers.cache(pkg_id)
-        logger.debug('Posted successfully: ' + tweet_text)
+        logger.debug(u'Posted successfully: ' + tweet_text)
     else:
-        logger.debug('Not posted (tweet unsuccessful): ' + tweet_text)
-    return response.status == 200, '{0} {1}'.format(response.status,
+        logger.debug(u'Not posted (tweet unsuccessful): ' + tweet_text)
+    return response.status == 200, u'{0} {1}'.format(response.status,
                                                     response.reason)

@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# encoding: utf-8
+#
+# This file is part of ckanext-twitter
+# Created by the Natural History Museum in London, UK
+
 import ckan.plugins as p
 import nose
 from ckan.common import session
@@ -12,8 +18,8 @@ class TestGetConfigVariables(PylonsTestCase):
     @classmethod
     def setup_class(cls):
         super(TestGetConfigVariables, cls).setup_class()
-        p.load('datastore')
-        p.load('twitter')
+        p.load(u'datastore')
+        p.load(u'twitter')
         cls.config = Configurer()
         cls.df = DataFactory()
         cls.js_helpers = TwitterJSHelpers()
@@ -25,30 +31,30 @@ class TestGetConfigVariables(PylonsTestCase):
     def teardown_class(cls):
         cls.config.reset()
         cls.df.destroy()
-        p.unload('datastore')
-        p.unload('twitter')
+        p.unload(u'datastore')
+        p.unload(u'twitter')
 
     def test_gets_context(self):
         assert isinstance(self.js_helpers.context, dict)
 
     def test_returns_false_if_not_in_session(self):
         session.clear()
-        eq_(self.js_helpers.tweet_ready(self.df.public_no_records['id']),
+        eq_(self.js_helpers.tweet_ready(self.df.public_no_records[u'id']),
             False)
 
     def test_returns_true_if_is_in_session(self):
-        session.setdefault('twitter_is_suitable',
-                           self.df.public_no_records['id'])
+        session.setdefault(u'twitter_is_suitable',
+                           self.df.public_no_records[u'id'])
         session.save()
-        eq_(self.js_helpers.tweet_ready(self.df.public_no_records['id']), True)
+        eq_(self.js_helpers.tweet_ready(self.df.public_no_records[u'id']), True)
 
     def test_gets_tweet(self):
-        self.config.remove(['ckanext.twitter.new'])
-        eq_(self.js_helpers.get_tweet(self.df.public_no_records['id']),
-            'New dataset: "A test package" by Author (1 resource).')
+        self.config.remove([u'ckanext.twitter.new'])
+        eq_(self.js_helpers.get_tweet(self.df.public_no_records[u'id']),
+            u'New dataset: "A test package" by Author (1 resource).')
 
     def test_not_suitable_if_does_not_exist(self):
-        is_suitable = twitter_pkg_suitable(self.df.context, 'not-a-real-id')
+        is_suitable = twitter_pkg_suitable(self.df.context, u'not-a-real-id')
         eq_(is_suitable, False)
 
     def test_not_suitable_if_not_active(self):
@@ -57,19 +63,19 @@ class TestGetConfigVariables(PylonsTestCase):
         assert self.df.public_records is not None
 
         # not active
-        self.df.deactivate_package(self.df.public_records['id'])
-        assert self.df.public_records['state'] != 'active'
+        self.df.deactivate_package(self.df.public_records[u'id'])
+        assert self.df.public_records[u'state'] != u'active'
 
         # not draft
-        assert self.df.public_records['state'] != 'draft'
+        assert self.df.public_records[u'state'] != u'draft'
 
         # is suitable
         is_suitable = twitter_pkg_suitable(self.df.context,
-                                           self.df.public_records['id'])
+                                           self.df.public_records[u'id'])
         eq_(is_suitable, False)
 
         # undo the deactivation
-        self.df.activate_package(self.df.public_records['id'])
+        self.df.activate_package(self.df.public_records[u'id'])
 
     def test_not_suitable_if_no_resources(self):
         # exists
@@ -77,15 +83,15 @@ class TestGetConfigVariables(PylonsTestCase):
         assert self.df.public_records is not None
 
         # active
-        eq_(self.df.public_records['state'], 'active')
+        eq_(self.df.public_records[u'state'], u'active')
 
         # has no resources
         self.df.remove_public_resources()
-        eq_(len(self.df.public_records.get('resources', [])), 0)
+        eq_(len(self.df.public_records.get(u'resources', [])), 0)
 
         # is suitable
         is_suitable = twitter_pkg_suitable(self.df.context,
-                                           self.df.public_records['id'])
+                                           self.df.public_records[u'id'])
         eq_(is_suitable, False)
 
         # undo
@@ -97,16 +103,16 @@ class TestGetConfigVariables(PylonsTestCase):
         assert pkg_dict is not None
 
         # active
-        eq_(pkg_dict['state'], 'active')
+        eq_(pkg_dict[u'state'], u'active')
 
         # has resources
-        assert len(pkg_dict['resources']) > 0
+        assert len(pkg_dict[u'resources']) > 0
 
         # resources are not active
-        active_resources = [r['state'] == 'active' for r in
-                            pkg_dict['resources']]
+        active_resources = [r[u'state'] == u'active' for r in
+                            pkg_dict[u'resources']]
         eq_(any(active_resources), False,
-            '{0}/{1} resources still active'.format(sum(active_resources),
+            u'{0}/{1} resources still active'.format(sum(active_resources),
                                                     len(active_resources)))
 
         # is suitable
@@ -120,22 +126,22 @@ class TestGetConfigVariables(PylonsTestCase):
         assert self.df.private_records is not None
 
         # active
-        eq_(self.df.private_records['state'], 'active')
+        eq_(self.df.private_records[u'state'], u'active')
 
         # has resources
-        assert len(self.df.private_records['resources']) > 0
+        assert len(self.df.private_records[u'resources']) > 0
 
         # resources are active
-        active_resources = [r['state'] == 'active' for r in
-                            self.df.private_records['resources']]
+        active_resources = [r[u'state'] == u'active' for r in
+                            self.df.private_records[u'resources']]
         eq_(any(active_resources), True)
 
         # is private
-        eq_(self.df.private_records.get('private', False), True)
+        eq_(self.df.private_records.get(u'private', False), True)
 
         # is suitable
         is_suitable = twitter_pkg_suitable(self.df.context,
-                                           self.df.private_records['id'])
+                                           self.df.private_records[u'id'])
         eq_(is_suitable, False)
 
     def test_otherwise_suitable(self):
@@ -144,20 +150,20 @@ class TestGetConfigVariables(PylonsTestCase):
         assert self.df.public_records is not None
 
         # active
-        eq_(self.df.public_records['state'], 'active')
+        eq_(self.df.public_records[u'state'], u'active')
 
         # has resources
-        assert len(self.df.public_records['resources']) > 0
+        assert len(self.df.public_records[u'resources']) > 0
 
         # resources are active
-        active_resources = [r['state'] == 'active' for r in
-                            self.df.public_records['resources']]
+        active_resources = [r[u'state'] == u'active' for r in
+                            self.df.public_records[u'resources']]
         eq_(any(active_resources), True)
 
         # not private
-        eq_(self.df.public_records.get('private', False), False)
+        eq_(self.df.public_records.get(u'private', False), False)
 
         # is suitable
         is_suitable = twitter_pkg_suitable(self.df.context,
-                                           self.df.public_records['id'])
+                                           self.df.public_records[u'id'])
         eq_(is_suitable, True)

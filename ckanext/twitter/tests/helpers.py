@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# encoding: utf-8
+#
+# This file is part of ckanext-twitter
+# Created by the Natural History Museum in London, UK
+
 import ckan.model as model
 import ckan.new_tests.helpers as helpers
 import pylons.config
@@ -28,12 +34,12 @@ class DataFactory(object):
         :return: dict
         '''
         return {
-            'notes': 'these are some notes',
-            'dataset_category': 'cat1',
-            'author': self.author,
-            'title': self.title,
-            'private': is_private,
-            'owner_org': self.org['id']
+            u'notes': u'these are some notes',
+            u'dataset_category': u'cat1',
+            u'author': self.author,
+            u'title': self.title,
+            u'private': is_private,
+            u'owner_org': self.org[u'id']
             }
 
     def _resource_data(self, pkg_id, records = None):
@@ -46,22 +52,22 @@ class DataFactory(object):
         '''
         resource = factories.Resource()
         data = {
-            'resource': {
-                'id': resource['id'],
-                'package_id': pkg_id,
-                'name': 'Test records',
-                'owner_org': self.org['id']
+            u'resource': {
+                u'id': resource[u'id'],
+                u'package_id': pkg_id,
+                u'name': u'Test records',
+                u'owner_org': self.org[u'id']
                 },
-            'fields': [{
-                'id': 'common_name',
-                'type': 'text'
+            u'fields': [{
+                u'id': u'common_name',
+                u'type': u'text'
                 }, {
-                'id': 'scientific_name',
-                'type': 'text'
+                u'id': u'scientific_name',
+                u'type': u'text'
                 }]
             }
         if records:
-            data['records'] = records
+            data[u'records'] = records
         return data
 
     @property
@@ -71,20 +77,20 @@ class DataFactory(object):
         :return: list
         '''
         return [{
-            'common_name': 'Egyptian vulture',
-            'scientific_name': 'Neophron percnopterus'
+            u'common_name': u'Egyptian vulture',
+            u'scientific_name': u'Neophron percnopterus'
             }, {
-            'common_name': 'Malabar squirrel',
-            'scientific_name': 'Ratufa indica'
+            u'common_name': u'Malabar squirrel',
+            u'scientific_name': u'Ratufa indica'
             }, {
-            'common_name': 'Screamer, crested',
-            'scientific_name': 'Chauna torquata'
+            u'common_name': u'Screamer, crested',
+            u'scientific_name': u'Chauna torquata'
             }, {
-            'common_name': 'Heron, giant',
-            'scientific_name': 'Ardea golieth'
+            u'common_name': u'Heron, giant',
+            u'scientific_name': u'Ardea golieth'
             }, {
-            'common_name': 'Water monitor',
-            'scientific_name': 'Varanus salvator'
+            u'common_name': u'Water monitor',
+            u'scientific_name': u'Varanus salvator'
             }]
 
     def long_title(self):
@@ -92,20 +98,20 @@ class DataFactory(object):
         Set the title to a long string, so any new packages that are created
         use the long title.
         '''
-        self.title = "This is a very long package title that's going " \
-                     "to make the tweet exceed 140 characters, " \
-                     "which would be a shame."
+        self.title = u"This is a very long package title that's going " \
+                     u'to make the tweet exceed 140 characters, ' \
+                     u'which would be a shame.'
 
     def long_author(self):
         '''
         Set the author to a long semicolon-delimited string, so any new
         packages use this long author string.
         '''
-        self.author = 'Waylon Dalton; Justine Henderson; ' \
-                      'Abdullah Lang; Marcus Cruz; Thalia Cobb; ' \
-                      'Mathias Little; Eddie Randolph; ' \
-                      'Angela Walker; Lia Shelton; Hadassah Hartman; ' \
-                      'Joanna Shaffer; Jonathon Sheppard'
+        self.author = u'Waylon Dalton; Justine Henderson; ' \
+                      u'Abdullah Lang; Marcus Cruz; Thalia Cobb; ' \
+                      u'Mathias Little; Eddie Randolph; ' \
+                      u'Angela Walker; Lia Shelton; Hadassah Hartman; ' \
+                      u'Joanna Shaffer; Jonathon Sheppard'
 
     def deactivate_package(self, pkg_id):
         '''
@@ -113,11 +119,11 @@ class DataFactory(object):
         dictionaries afterwards so they are up-to-date.
         :param pkg_id: The package to deactivate.
         '''
-        pkg_dict = get_action('package_show')(self.context, {
-            'id': pkg_id
+        pkg_dict = get_action(u'package_show')(self.context, {
+            u'id': pkg_id
             })
-        pkg_dict['state'] = 'inactive'
-        get_action('package_update')(self.context, pkg_dict)
+        pkg_dict[u'state'] = u'inactive'
+        get_action(u'package_update')(self.context, pkg_dict)
         self.reload_pkg_dicts()
 
     def activate_package(self, pkg_id):
@@ -126,11 +132,11 @@ class DataFactory(object):
         dictionaries afterwards so they are up-to-date.
         :param pkg_id: The package to activate.
         '''
-        pkg_dict = get_action('package_show')(self.context, {
-            'id': pkg_id
+        pkg_dict = get_action(u'package_show')(self.context, {
+            u'id': pkg_id
             })
-        pkg_dict['state'] = 'active'
-        get_action('package_update')(self.context, pkg_dict)
+        pkg_dict[u'state'] = u'active'
+        get_action(u'package_update')(self.context, pkg_dict)
         self.reload_pkg_dicts()
 
     def remove_public_resources(self):
@@ -139,9 +145,9 @@ class DataFactory(object):
         class. Reloads all the internal package dictionaries afterwards so
         they are up-to-date.
         '''
-        for r in self.public_records['resources']:
-            get_action('resource_delete')(self.context, {
-                'id': r['id']
+        for r in self.public_records[u'resources']:
+            get_action(u'resource_delete')(self.context, {
+                u'id': r[u'id']
                 })
         self.reload_pkg_dicts()
 
@@ -154,10 +160,10 @@ class DataFactory(object):
         :return: dict
         '''
         pkg_dict = self.public_records.copy()
-        resources_dict = pkg_dict['resources']
+        resources_dict = pkg_dict[u'resources']
         for r in resources_dict:
-            r['state'] = 'draft'
-        pkg_dict['resources'] = resources_dict
+            r[u'state'] = u'draft'
+        pkg_dict[u'resources'] = resources_dict
         return pkg_dict
 
     def _make_resource(self, pkg_id, records = None):
@@ -167,7 +173,7 @@ class DataFactory(object):
         :param records: Records to add to the resource, if any.
         '''
         data = self._resource_data(pkg_id, records)
-        get_action('datastore_create')(self.context, data)
+        get_action(u'datastore_create')(self.context, data)
 
     def create(self):
         '''
@@ -177,14 +183,14 @@ class DataFactory(object):
         self.sysadmin = factories.Sysadmin()
         self.org = factories.Organization()
         self.public_records = factories.Dataset(**self._package_data())
-        self._make_resource(self.public_records['id'], self._records)
+        self._make_resource(self.public_records[u'id'], self._records)
 
         self.public_no_records = factories.Dataset(**self._package_data())
-        self._make_resource(self.public_no_records['id'])
+        self._make_resource(self.public_no_records[u'id'])
 
         self.private_records = \
             factories.Dataset(**self._package_data(True))
-        self._make_resource(self.private_records['id'], self._records)
+        self._make_resource(self.private_records[u'id'], self._records)
 
         self.reload_pkg_dicts()
 
@@ -194,8 +200,8 @@ class DataFactory(object):
         e.g. title string.
         '''
         helpers.reset_db()
-        self.author = 'Test Author'
-        self.title = 'A test package'
+        self.author = u'Test Author'
+        self.title = u'A test package'
 
     def refresh(self):
         '''
@@ -212,13 +218,13 @@ class DataFactory(object):
         :return: dict
         '''
         context = {
-            'model': model,
-            'session': model.Session,
-            'user': self.sysadmin['name'],
-            'ignore_auth': True
+            u'model': model,
+            u'session': model.Session,
+            u'user': self.sysadmin[u'name'],
+            u'ignore_auth': True
             }
         # to fix an issue in ckanext-harvest (commit f315f41)
-        context.pop('__auth_audit', None)
+        context.pop(u'__auth_audit', None)
         return context
 
     def reload_pkg_dicts(self):
@@ -226,14 +232,14 @@ class DataFactory(object):
         Refreshes the package information from the database for each of the
         class' defined packages.
         '''
-        self.public_records = get_action('package_show')(self.context, {
-            'id': self.public_records['id']
+        self.public_records = get_action(u'package_show')(self.context, {
+            u'id': self.public_records[u'id']
             })
-        self.public_no_records = get_action('package_show')(self.context, {
-            'id': self.public_no_records['id']
+        self.public_no_records = get_action(u'package_show')(self.context, {
+            u'id': self.public_no_records[u'id']
             })
-        self.private_records = get_action('package_show')(self.context, {
-            'id': self.private_records['id']
+        self.private_records = get_action(u'package_show')(self.context, {
+            u'id': self.private_records[u'id']
             })
 
 
@@ -271,7 +277,7 @@ class Configurer(object):
         '''
         pylons.config.update(self.stored)
         self.update({
-            'ckanext.twitter.debug': self.debug
+            u'ckanext.twitter.debug': self.debug
             })
 
     def update(self, new_values):
