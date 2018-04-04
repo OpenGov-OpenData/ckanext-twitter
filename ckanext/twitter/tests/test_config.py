@@ -4,34 +4,33 @@
 # This file is part of ckanext-twitter
 # Created by the Natural History Museum in London, UK
 
-import ckan.new_tests.helpers as helpers
-import ckan.plugins
-import ckanext.twitter.lib.config_helpers as config_helpers
 import nose
-import pylons
-import pylons.test
-from ckan.tests.pylons_controller import PylonsTestCase
+
+import ckanext.twitter.lib.config_helpers as config_helpers
+from ckan import plugins
+from ckan.plugins import toolkit
+from ckan.tests import helpers
 from ckanext.twitter.tests.helpers import Configurer
 
 eq_ = nose.tools.eq_
 
 
-class TestGetConfigVariables(PylonsTestCase):
+class TestGetConfigVariables(helpers.FunctionalTestBase):
     @classmethod
     def setup_class(cls):
         super(TestGetConfigVariables, cls).setup_class()
         cls.config = Configurer()
-        ckan.plugins.load(u'twitter')
+        plugins.load(u'twitter')
 
     def teardown(self):
         self.config.reset()
 
     @classmethod
     def teardown_class(cls):
-        ckan.plugins.unload(u'twitter')
+        plugins.unload(u'twitter')
         helpers.reset_db()
 
-    def _set_config_value(self, key, has_var, test_value = None):
+    def _set_config_value(self, key, has_var, test_value=None):
         if has_var:
             self.config.update({
                 u'ckanext.twitter.' + key: test_value
@@ -42,14 +41,14 @@ class TestGetConfigVariables(PylonsTestCase):
     def test_gets_debug_value_when_present(self):
         test_value = False
         self._set_config_value(u'debug', True, test_value)
-        config_value = pylons.config.get(u'ckanext.twitter.debug')
+        config_value = toolkit.config.get(u'ckanext.twitter.debug')
         eq_(test_value, config_value)
 
     def test_gets_debug_default_when_absent(self):
         default_value = True
         self._set_config_value(u'debug', False)
-        config_value = pylons.config.get(u'ckanext.twitter.debug',
-                                         default_value)
+        config_value = toolkit.config.get(u'ckanext.twitter.debug',
+                                          default_value)
         eq_(default_value, config_value)
 
     def test_gets_hours_between_tweets_value_when_present(self):

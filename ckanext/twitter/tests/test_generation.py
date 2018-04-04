@@ -4,9 +4,9 @@
 # This file is part of ckanext-twitter
 # Created by the Natural History Museum in London, UK
 
-import ckan.plugins as p
 import nose
-from ckan.tests.pylons_controller import PylonsTestCase
+from ckan import plugins
+from ckan.tests import helpers
 from ckanext.twitter.lib import (cache_helpers, parsers as twitter_parsers,
                                  twitter_api)
 from ckanext.twitter.tests.helpers import Configurer, DataFactory
@@ -14,13 +14,13 @@ from ckanext.twitter.tests.helpers import Configurer, DataFactory
 eq_ = nose.tools.eq_
 
 
-class TestTweetGeneration(PylonsTestCase):
+class TestTweetGeneration(helpers.FunctionalTestBase):
     @classmethod
     def setup_class(cls):
         super(TestTweetGeneration, cls).setup_class()
         cls.config = Configurer()
-        p.load(u'datastore')
-        p.load(u'twitter')
+        plugins.load(u'datastore')
+        plugins.load(u'twitter')
         cls.df = DataFactory()
         cache_helpers.reset_cache()
 
@@ -31,21 +31,21 @@ class TestTweetGeneration(PylonsTestCase):
     def teardown_class(cls):
         cls.config.reset()
         cls.df.destroy()
-        p.unload(u'datastore')
-        p.unload(u'twitter')
+        plugins.unload(u'datastore')
+        plugins.unload(u'twitter')
 
     def test_generates_tweet_if_public(self):
         tweet_text = twitter_parsers.generate_tweet(self.df.context,
                                                     self.df.public_records[
                                                         u'id'],
-                                                    is_new = True)
+                                                    is_new=True)
         assert tweet_text is not None
 
     def test_does_not_generate_tweet_if_private(self):
         tweet_text = twitter_parsers.generate_tweet(self.df.context,
                                                     self.df.private_records[
                                                         u'id'],
-                                                    is_new = True)
+                                                    is_new=True)
         eq_(tweet_text, None)
 
     def test_generates_correct_tweet_for_new(self):
@@ -54,7 +54,7 @@ class TestTweetGeneration(PylonsTestCase):
         tweet_text = twitter_parsers.generate_tweet(self.df.context,
                                                     self.df.public_records[
                                                         u'id'],
-                                                    is_new = True)
+                                                    is_new=True)
         correct_tweet_text = u'New dataset: "A test package" by Author (' \
                              u'5 records).'
         eq_(tweet_text, correct_tweet_text)
@@ -65,7 +65,7 @@ class TestTweetGeneration(PylonsTestCase):
         tweet_text = twitter_parsers.generate_tweet(self.df.context,
                                                     self.df.public_records[
                                                         u'id'],
-                                                    is_new = False)
+                                                    is_new=False)
         correct_tweet_text = u'Updated dataset: "A test package" by Author' \
                              u' (5 records).'
         eq_(tweet_text, correct_tweet_text)
@@ -88,7 +88,7 @@ class TestTweetGeneration(PylonsTestCase):
         pkg_dict = self.df.public_records
         tweet_text = twitter_parsers.generate_tweet(self.df.context,
                                                     pkg_dict[u'id'],
-                                                    is_new = True)
+                                                    is_new=True)
         correct_tweet_text = u'New dataset: "A test package" by Dalton et al.' \
                              u' (5 records).'
         eq_(tweet_text, correct_tweet_text)
@@ -103,7 +103,7 @@ class TestTweetGeneration(PylonsTestCase):
         pkg_dict = self.df.public_records
         tweet_text = twitter_parsers.generate_tweet(self.df.context,
                                                     pkg_dict[u'id'],
-                                                    is_new = True)
+                                                    is_new=True)
         correct_tweet_text = u'New dataset: "This is a very long package ' \
                              u'title that\'s[...]" by Author (5 ' \
                              u'records).'
@@ -120,11 +120,11 @@ class TestTweetGeneration(PylonsTestCase):
         pkg_dict = self.df.public_records
         force_truncate = twitter_parsers.generate_tweet(self.df.context,
                                                         pkg_dict[u'id'],
-                                                        is_new = True)
+                                                        is_new=True)
         no_force = twitter_parsers.generate_tweet(self.df.context,
                                                   pkg_dict[u'id'],
-                                                  is_new = True,
-                                                  force_truncate = False)
+                                                  is_new=True,
+                                                  force_truncate=False)
         assert len(force_truncate) <= 140
         assert len(no_force) <= 140
         self.df.refresh()

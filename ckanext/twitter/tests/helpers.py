@@ -4,11 +4,8 @@
 # This file is part of ckanext-twitter
 # Created by the Natural History Museum in London, UK
 
-import ckan.model as model
-import ckan.new_tests.helpers as helpers
-import pylons.config
-from ckan.logic import get_action
-from ckan.new_tests import factories as factories
+from ckan.plugins import toolkit
+from ckan.tests import factories, helpers
 
 
 class DataFactory(object):
@@ -26,7 +23,7 @@ class DataFactory(object):
         self.title = None
         self.refresh()
 
-    def _package_data(self, is_private = False):
+    def _package_data(self, is_private=False):
         '''
         Returns a dictionary with some standard package metadata, with an
         optional 'private' flag.
@@ -42,7 +39,7 @@ class DataFactory(object):
             u'owner_org': self.org[u'id']
             }
 
-    def _resource_data(self, pkg_id, records = None):
+    def _resource_data(self, pkg_id, records=None):
         '''
         Returns a dictionary with some standard dictionary, including an
         associated package ID. Records are optional.
@@ -119,11 +116,11 @@ class DataFactory(object):
         dictionaries afterwards so they are up-to-date.
         :param pkg_id: The package to deactivate.
         '''
-        pkg_dict = get_action(u'package_show')(self.context, {
+        pkg_dict = toolkit.get_action(u'package_show')(self.context, {
             u'id': pkg_id
             })
         pkg_dict[u'state'] = u'inactive'
-        get_action(u'package_update')(self.context, pkg_dict)
+        toolkit.get_action(u'package_update')(self.context, pkg_dict)
         self.reload_pkg_dicts()
 
     def activate_package(self, pkg_id):
@@ -132,11 +129,11 @@ class DataFactory(object):
         dictionaries afterwards so they are up-to-date.
         :param pkg_id: The package to activate.
         '''
-        pkg_dict = get_action(u'package_show')(self.context, {
+        pkg_dict = toolkit.get_action(u'package_show')(self.context, {
             u'id': pkg_id
             })
         pkg_dict[u'state'] = u'active'
-        get_action(u'package_update')(self.context, pkg_dict)
+        toolkit.get_action(u'package_update')(self.context, pkg_dict)
         self.reload_pkg_dicts()
 
     def remove_public_resources(self):
@@ -146,7 +143,7 @@ class DataFactory(object):
         they are up-to-date.
         '''
         for r in self.public_records[u'resources']:
-            get_action(u'resource_delete')(self.context, {
+            toolkit.get_action(u'resource_delete')(self.context, {
                 u'id': r[u'id']
                 })
         self.reload_pkg_dicts()
@@ -166,14 +163,14 @@ class DataFactory(object):
         pkg_dict[u'resources'] = resources_dict
         return pkg_dict
 
-    def _make_resource(self, pkg_id, records = None):
+    def _make_resource(self, pkg_id, records=None):
         '''
         Creates a resource in the datastore.
         :param pkg_id: The package ID to associate the resource with.
         :param records: Records to add to the resource, if any.
         '''
         data = self._resource_data(pkg_id, records)
-        get_action(u'datastore_create')(self.context, data)
+        toolkit.get_action(u'datastore_create')(self.context, data)
 
     def create(self):
         '''
@@ -218,8 +215,6 @@ class DataFactory(object):
         :return: dict
         '''
         context = {
-            u'model': model,
-            u'session': model.Session,
             u'user': self.sysadmin[u'name'],
             u'ignore_auth': True
             }
@@ -232,13 +227,13 @@ class DataFactory(object):
         Refreshes the package information from the database for each of the
         class' defined packages.
         '''
-        self.public_records = get_action(u'package_show')(self.context, {
+        self.public_records = toolkit.get_action(u'package_show')(self.context, {
             u'id': self.public_records[u'id']
             })
-        self.public_no_records = get_action(u'package_show')(self.context, {
+        self.public_no_records = toolkit.get_action(u'package_show')(self.context, {
             u'id': self.public_no_records[u'id']
             })
-        self.private_records = get_action(u'package_show')(self.context, {
+        self.private_records = toolkit.get_action(u'package_show')(self.context, {
             u'id': self.private_records[u'id']
             })
 
@@ -249,7 +244,7 @@ class Configurer(object):
     manipulating the current pylons config within tests.
     '''
 
-    def __init__(self, debug = True):
+    def __init__(self, debug=True):
         self.debug = debug
         self.stored = None
         self._changed = {}
@@ -260,7 +255,7 @@ class Configurer(object):
         '''
         Stores a copy of the current pylons config.
         '''
-        self.stored = pylons.config.copy()
+        self.stored = toolkit.config.copy()
 
     @property
     def current(self):
@@ -268,14 +263,14 @@ class Configurer(object):
         Returns the current pylons config.
         :return: PylonsConfig
         '''
-        return pylons.config
+        return toolkit.config
 
     def reset(self):
         '''
         Overwrites the current pylons config with the stored config,
         then sets the debug value to ensure that this is consistent.
         '''
-        pylons.config.update(self.stored)
+        toolkit.config.update(self.stored)
         self.update({
             u'ckanext.twitter.debug': self.debug
             })
@@ -288,8 +283,8 @@ class Configurer(object):
         '''
         for key, value in new_values.items():
             if key not in self._changed.keys():
-                self._changed[key] = pylons.config.get(key, None)
-            pylons.config[key] = value
+                self._changed[key] = toolkit.config.get(key, None)
+            toolkit.config[key] = value
 
     def remove(self, keys):
         '''
@@ -299,9 +294,9 @@ class Configurer(object):
         '''
         for k in keys:
             if k not in self._changed.keys():
-                self._changed[k] = pylons.config.get(k, None)
-            if k in pylons.config.keys():
-                del pylons.config[k]
+                self._changed[k] = toolkit.config.get(k, None)
+            if k in toolkit.config.keys():
+                del toolkit.config[k]
 
     def undo(self, key):
         '''
@@ -310,7 +305,7 @@ class Configurer(object):
         :param key: The key to revert.
         '''
         if key in self._changed.keys() and self._changed.get(key, None):
-            pylons.config[key] = self._changed[key]
+            toolkit.config[key] = self._changed[key]
         else:
-            del pylons.config[key]
+            del toolkit.config[key]
         del self._changed[key]

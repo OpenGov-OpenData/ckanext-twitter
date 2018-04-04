@@ -4,9 +4,10 @@
 # This file is part of ckanext-twitter
 # Created by the Natural History Museum in London, UK
 
-import ckan.plugins as p
 import nose
 from ckan.tests.pylons_controller import PylonsTestCase
+
+from ckan import plugins
 from ckanext.twitter.lib import (parsers as twitter_parsers)
 from ckanext.twitter.tests.helpers import Configurer, DataFactory
 
@@ -18,28 +19,28 @@ class TestDatasetMetadata(PylonsTestCase):
     def setup_class(cls):
         super(TestDatasetMetadata, cls).setup_class()
         cls.config = Configurer()
-        p.load(u'datastore')
-        p.load(u'twitter')
+        plugins.load(u'datastore')
+        plugins.load(u'twitter')
         cls.df = DataFactory()
 
     @classmethod
     def teardown_class(cls):
         cls.config.reset()
         cls.df.destroy()
-        p.unload(u'datastore')
-        p.unload(u'twitter')
+        plugins.unload(u'datastore')
+        plugins.unload(u'twitter')
 
     def test_gets_dataset_author(self):
         pkg_dict = self.df.public_records
         eq_(pkg_dict[u'author'], u'Test Author',
             u'Author is actually: {0}'.format(
-                    pkg_dict.get(u'author', u'no author set')))
+                pkg_dict.get(u'author', u'no author set')))
 
     def test_gets_dataset_title(self):
         pkg_dict = self.df.public_records
         eq_(pkg_dict[u'title'], u'A test package',
             u'Title is actually: {0}'.format(
-                    pkg_dict.get(u'title', u'no title set')))
+                pkg_dict.get(u'title', u'no title set')))
 
     def test_gets_dataset_number_of_records_if_has_records(self):
         pkg_dict = self.df.public_records
@@ -47,7 +48,7 @@ class TestDatasetMetadata(PylonsTestCase):
                                                        pkg_dict[u'id'])
         eq_(n_records, 5,
             u'Calculated number of records: {0}\nActual number: 5'.format(
-                    n_records))
+                n_records))
 
     def test_gets_dataset_number_of_records_if_no_records(self):
         pkg_dict = self.df.public_no_records
@@ -55,7 +56,7 @@ class TestDatasetMetadata(PylonsTestCase):
                                                        pkg_dict[u'id'])
         eq_(n_records, 0,
             u'Calculated number of records: {0}\nActual number: 0'.format(
-                    n_records))
+                n_records))
 
     def test_gets_is_private(self):
         pkg_dict = self.df.public_records

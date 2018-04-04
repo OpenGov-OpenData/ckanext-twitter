@@ -4,22 +4,23 @@
 # This file is part of ckanext-twitter
 # Created by the Natural History Museum in London, UK
 
-import ckan.plugins as p
 import nose
+
+from ckan import plugins
 from ckan.common import session
-from ckan.tests.pylons_controller import PylonsTestCase
+from ckan.tests import helpers
 from ckanext.twitter.lib.helpers import TwitterJSHelpers, twitter_pkg_suitable
 from ckanext.twitter.tests.helpers import Configurer, DataFactory
 
 eq_ = nose.tools.eq_
 
 
-class TestGetConfigVariables(PylonsTestCase):
+class TestGetConfigVariables(helpers.FunctionalTestBase):
     @classmethod
     def setup_class(cls):
         super(TestGetConfigVariables, cls).setup_class()
-        p.load(u'datastore')
-        p.load(u'twitter')
+        plugins.load(u'datastore')
+        plugins.load(u'twitter')
         cls.config = Configurer()
         cls.df = DataFactory()
         cls.js_helpers = TwitterJSHelpers()
@@ -31,8 +32,8 @@ class TestGetConfigVariables(PylonsTestCase):
     def teardown_class(cls):
         cls.config.reset()
         cls.df.destroy()
-        p.unload(u'datastore')
-        p.unload(u'twitter')
+        plugins.unload(u'datastore')
+        plugins.unload(u'twitter')
 
     def test_gets_context(self):
         assert isinstance(self.js_helpers.context, dict)
@@ -113,7 +114,7 @@ class TestGetConfigVariables(PylonsTestCase):
                             pkg_dict[u'resources']]
         eq_(any(active_resources), False,
             u'{0}/{1} resources still active'.format(sum(active_resources),
-                                                    len(active_resources)))
+                                                     len(active_resources)))
 
         # is suitable
         is_suitable = twitter_pkg_suitable(self.df.context,
