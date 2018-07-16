@@ -141,9 +141,12 @@ def generate_tweet(context, pkg_id, is_new, force_truncate = True):
         })
     if pkg.get(u'private', False):
         return
-    format_string = config_helpers.twitter_new_format() \
-        if is_new else \
-        config_helpers.twitter_updated_format()
+    # Setting Tweet String's format depending of if dataset "is new"
+    if is_new:
+        format_string = config_helpers.twitter_new_format() 
+    else:
+        format_string = config_helpers.twitter_updated_format()
+
     tokens = re.findall('(?:{{ )(\w+)(?:(?:|.+?)? }})', format_string)
     template = Environment().from_string(format_string)
     simplified_dict = extract_info(context, pkg,
