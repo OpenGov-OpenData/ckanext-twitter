@@ -23,6 +23,14 @@ def reset_cache():
     twitter_cache.clear()
 
 
+def remove_from_cache(pkg_id):
+    '''
+    Remove the package id from the cache.
+    :param pkg_id:
+    '''
+    twitter_cache.remove_value(pkg_id)
+
+
 def expired(pkg_id):
     '''
     Checks to see if the cache entry for the package's last tweet (if any)

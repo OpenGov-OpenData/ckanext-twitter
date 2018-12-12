@@ -2,18 +2,18 @@ import ckan.plugins as p
 import ckanext.twitter.lib.config_helpers
 from beaker.cache import cache_regions
 from ckan.common import session
-from ckanext.twitter.lib import config_helpers, helpers as twitter_helpers
+from ckanext.twitter.lib import config_helpers, helpers as twitter_helpers, cache_helpers
 
 
 class TwitterPlugin(p.SingletonPlugin):
     '''
     Automatically send tweets when a dataset is updated or created.
     '''
-    p.implements(p.IConfigurable, inherit = True)
+    p.implements(p.IConfigurable, inherit=True)
     p.implements(p.IConfigurer)
-    p.implements(p.IPackageController, inherit = True)
-    p.implements(p.ITemplateHelpers, inherit = True)
-    p.implements(p.IRoutes, inherit = True)
+    p.implements(p.IPackageController, inherit=True)
+    p.implements(p.ITemplateHelpers, inherit=True)
+    p.implements(p.IRoutes, inherit=True)
 
     # IConfigurable
     def configure(self, config):
@@ -56,8 +56,13 @@ class TwitterPlugin(p.SingletonPlugin):
     def before_map(self, _map):
         controller = 'ckanext.twitter.controllers.tweet:TweetController'
         _map.connect('post_tweet', '/dataset/{pkg_id}/tweet',
-                     controller = controller, action = 'send',
-                     conditions = {
+                     controller=controller, action='send',
+                     conditions={
+                         'method': ['POST']
+                         })
+        _map.connect('clear_tweet_cache', '/dataset/{pkg_id}/tweet-clear',
+                     controller=controller, action='clear',
+                     conditions={
                          'method': ['POST']
                          })
         return _map
