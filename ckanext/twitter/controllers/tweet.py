@@ -33,5 +33,6 @@ class TweetController(base.BaseController):
 
     def clear(self, pkg_id):
         cache_helpers.remove_from_cache(pkg_id)
-        del session['twitter_is_suitable']
-        session.save()
+        if 'twitter_is_suitable' in session:
+            del session['twitter_is_suitable']
+            session.save()
