@@ -2,6 +2,8 @@ import math
 
 import ckan.logic as logic
 import re
+
+from ckan.lib.search import SearchIndexError
 from ckan.logic import get_action
 from ckanext.twitter.lib import config_helpers
 from jinja2 import Environment
@@ -113,7 +115,7 @@ def get_number_records(context, pkg_id):
                 'resource_id': rid
                 })
             total += resource_data.get('total', 0)
-        except logic.NotFound:
+        except (logic.NotFound, SearchIndexError):
             pass
     return total
 
