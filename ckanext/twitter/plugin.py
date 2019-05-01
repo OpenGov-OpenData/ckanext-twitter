@@ -9,7 +9,7 @@ from beaker.cache import cache_regions
 import ckanext.twitter.lib.config_helpers
 from ckan.common import session
 from ckan.plugins import SingletonPlugin, implements, interfaces, toolkit
-from ckanext.twitter.lib import config_helpers, helpers as twitter_helpers
+from ckanext.twitter.lib import config_helpers, helpers as twitter_helpers, cache_helpers
 
 
 class TwitterPlugin(SingletonPlugin):
@@ -66,5 +66,10 @@ class TwitterPlugin(SingletonPlugin):
                      controller=controller, action=u'send',
                      conditions={
                          u'method': [u'POST']
+                         })
+        _map.connect('clear_tweet_cache', '/dataset/{pkg_id}/tweet-clear',
+                     controller=controller, action='clear',
+                     conditions={
+                         'method': ['POST']
                          })
         return _map

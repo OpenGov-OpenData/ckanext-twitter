@@ -6,8 +6,8 @@
 
 import json
 
-from ckanext.twitter.lib import twitter_api
 from ckan.plugins import toolkit
+from ckanext.twitter.lib import twitter_api, cache_helpers
 
 
 class TweetController(toolkit.BaseController):
@@ -35,3 +35,9 @@ class TweetController(toolkit.BaseController):
             u'reason': reason,
             u'tweet': text if text else u'tweet not defined'
             })
+
+    def clear(self, pkg_id):
+        cache_helpers.remove_from_cache(pkg_id)
+        if u'twitter_is_suitable' in session:
+            del session[u'twitter_is_suitable']
+            session.save()

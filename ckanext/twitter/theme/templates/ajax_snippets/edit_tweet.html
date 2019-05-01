@@ -22,9 +22,8 @@
             error=errors.tweet_text, classes=['control-medium'], is_required=true, attrs=extra_attrs) }}
             <div class="form-actions">
                 {{ form.required_message() }}
-                <button class="btn btn-primary save" type="submit" name="save">{{ _('Yes') }}</button>
-                <button class="btn btn-danger cancel" type="button" data-dismiss="modal" name="cancel">{{ _('No') }}
-                </button>
+                <button class="btn btn-primary save" type="submit" id="edit-tweet-save">{{ _('Yes') }}</button>
+                <button class="btn btn-danger cancel" type="button" id="edit-tweet-cancel">{{ _('No') }}</button>
             </div>
         </form>
         {% endblock %}

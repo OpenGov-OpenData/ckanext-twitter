@@ -7,6 +7,7 @@
 import math
 
 import re
+from ckan.lib.search import SearchIndexError
 from jinja2 import Environment
 
 from ckan.plugins import toolkit
@@ -119,7 +120,7 @@ def get_number_records(context, pkg_id):
                 u'resource_id': rid
                 })
             total += resource_data.get(u'total', 0)
-        except toolkit.ObjectNotFound:
+        except (toolkit.ObjectNotFound, SearchIndexError):
             pass
     return total
 
