@@ -21,9 +21,9 @@ class TwitterJSHelpers(object):
         :return: dict
         '''
         try:
-            c = toolkit.c.pylons.__dict__
+            c = toolkit.c.__dict__
         except AttributeError:
-            c = dict(toolkit.c.pylons)
+            c = dict(toolkit.c)
         return c
 
     def _get_package(self, package_name_or_id):

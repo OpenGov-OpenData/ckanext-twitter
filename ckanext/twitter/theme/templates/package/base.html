@@ -3,7 +3,7 @@
 {% block flash %}
 {{ super() }}
 {% resource 'ckanext-twitter/confirm-tweet' %}
-{% if h.tweet_ready(pkg.id) %}
+{% if pkg and h.tweet_ready(pkg.id) %}
 <input type="hidden" data-module="confirm-tweet" data-module-tweet="{{ h.get_tweet(pkg.id) }}"
        data-module-pkgid="{{ pkg.id }}" data-module-disable_edit="{{ h.disable_edit() }}">
 {% endif %}

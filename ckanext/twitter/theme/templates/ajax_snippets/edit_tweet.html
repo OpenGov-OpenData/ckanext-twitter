@@ -1,31 +1,35 @@
 {% import 'macros/form.html' as form %}
 
-<div class="modal">
-    <div class="modal-header">
-        <h3>
-            {{ _('Tweet this?') }}
-        </h3>
-    </div>
-    <div class="modal-body" style="max-height: 550px">
-        {% block edit_tweet_form %}
-        <form class="form-horizontal" id="edit-tweet-form">
-            {% set data = {'tweet_text': tweet} %}
-            {% set results = {} %}
-            {% set errors = {} %}
-            {% set error_summary = {} %}
-            {% if disable_edit == "true" or disable_edit == "True" %}
-            {% set extra_attrs = {'readonly':'true'} %}
-            {% else %}
-            {% set extra_attrs = {'maxlength': 140} %}
-            {% endif %}
-            {{ form.textarea('tweet_text', label=_('Tweet text'), id='field-tweet', value=data.tweet_text,
-            error=errors.tweet_text, classes=['control-medium'], is_required=true, attrs=extra_attrs) }}
-            <div class="form-actions">
-                {{ form.required_message() }}
-                <button class="btn btn-primary save" type="submit" id="edit-tweet-save">{{ _('Yes') }}</button>
-                <button class="btn btn-danger cancel" type="button" id="edit-tweet-cancel">{{ _('No') }}</button>
+<div class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    {{ _('Tweet this?') }}
+                </h3>
             </div>
-        </form>
-        {% endblock %}
+            <div class="modal-body" style="max-height: 550px">
+                {% block edit_tweet_form %}
+                    <form class="form-horizontal" id="edit-tweet-form">
+                        {% set data = {'tweet_text': tweet} %} {% set results = {} %} {% set errors = {} %} {% set error_summary = {} %}
+                        {% if disable_edit == "true" or disable_edit == "True" %}
+                            {% set extra_attrs = {'readonly':'true'} %}
+                        {% else %}
+                            {% set extra_attrs = {'maxlength': 140} %}
+                        {% endif %}
+                        {{ form.textarea('tweet_text', label=_('Tweet text'), id='field-tweet', value=data.tweet_text,
+            error=errors.tweet_text, is_required=true, attrs=extra_attrs) }}
+                        <div class="form-actions">
+                            {{ form.required_message() }}
+                            <button class="btn btn-primary save" type="submit"
+                                id="edit-tweet-save">{{ _('Yes') }}</button>
+                            <button class="btn btn-danger cancel" type="button"
+                                id="edit-tweet-cancel">{{ _('No') }}</button>
+                        </div>
+                    </form>
+                {% endblock %}
+            </div>
+        </div>
     </div>
+
 </div>

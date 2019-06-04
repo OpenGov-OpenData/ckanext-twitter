@@ -6,8 +6,9 @@
 
 import json
 
+from ckan.common import session
 from ckan.plugins import toolkit
-from ckanext.twitter.lib import twitter_api, cache_helpers
+from ckanext.twitter.lib import cache_helpers, twitter_api
 
 
 class TweetController(toolkit.BaseController):
