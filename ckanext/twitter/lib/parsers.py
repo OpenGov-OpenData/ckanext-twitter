@@ -8,7 +8,12 @@ from ckan.logic import get_action
 from ckanext.twitter.lib import config_helpers
 from jinja2 import Environment
 
-tweet_limit = 140
+try:
+    from ckan.common import config
+except ImportError:
+    from pylons import config
+
+tweet_limit = 280
 
 
 def extract_info(context, pkg_dict, template_length, tokens):
@@ -68,7 +73,7 @@ def truncate_author(author):
         return re.split(name_sep_rgx, author)[-1] if name_sep else author
     first_author = re.split(sep_rgx, author)[0]
     if len(separators) == 1:
-        first_author = re.split(name_sep_rgx, first_author)[1]
+        first_author = re.split(name_sep_rgx, first_author)[-1]
     return '{0} et al.'.format(first_author)
 
 
@@ -138,13 +143,20 @@ def generate_tweet(context, pkg_id, is_new, force_truncate = True):
         })
     if pkg.get(u'private', False):
         return
-    format_string = config_helpers.twitter_new_format() \
-        if is_new else \
-        config_helpers.twitter_updated_format()
+    # Set tweet text depending on if dataset is new or resource was updated
+    if is_new:
+        format_string = config_helpers.twitter_new_format()
+    else:
+        format_string = config_helpers.twitter_updated_format()
+
     tokens = re.findall('(?:{{ )(\w+)(?:(?:|.+?)? }})', format_string)
     template = Environment().from_string(format_string)
     simplified_dict = extract_info(context, pkg,
                                    len(unicode(template.module)), tokens)
+    simplified_dict['dataset_url'] = '{0}/dataset/activity/{1}'.format(
+            str(config.get('ckan.site_url')),
+            str(pkg['id'])
+        )
     rendered = template.render(simplified_dict)
     # extra check to make sure the tweet isn't too long
     if len(rendered) > tweet_limit and force_truncate:

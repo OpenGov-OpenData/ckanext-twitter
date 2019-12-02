@@ -25,6 +25,8 @@ class TweetController(base.BaseController):
         else:
             posted = False
             reason = 'no tweet defined'
+        session.pop('twitter_is_suitable', '')
+        session.save()
         return json.dumps({
             'success': posted,
             'reason': reason,
