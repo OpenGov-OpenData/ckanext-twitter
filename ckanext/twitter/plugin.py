@@ -40,8 +40,12 @@ class TwitterPlugin(p.SingletonPlugin):
         is_suitable = twitter_helpers.twitter_pkg_suitable(context,
                                                            pkg_dict['id'])
         if is_suitable:
-            session.setdefault('twitter_is_suitable', pkg_dict['id'])
-            session.save()
+            try:
+                session.pop('twitter_is_suitable', '')
+                session.setdefault('twitter_is_suitable', pkg_dict['id'])
+                session.save()
+            except TypeError:
+                pass
 
     # ITemplateHelpers
     def get_helpers(self):
